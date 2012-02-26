@@ -1,3 +1,23 @@
-This file was created by IntelliJ IDEA 11.0 for binding GitHub repository
+Small utility to get statistics on stored (string and binary) fields in a Lucene index.
 
-Testing something
+Usage:
+ro.deathy.fieldsizes.Runner <luceneIndexDir> [statsFile]
+
+Stats generated are of two kinds:
+
+* Uses/Appearances of stored fields:
+
+Columns:
+- Field Name: Name of field
+- Document Appearances: Number of times a field appears in a document. This can be more than total number of documents in case the field appears more than once in documents.
+- Percentage: Percentage of Document Appearances compared to number of documents in index.
+
+* Bytes usage of stored fields:
+
+Columns:
+- Field Name: Name of field
+- Bytes Used: Total number of bytes used by this field across the whole index
+- Percentage: Bytes Used for field as percentage of total number of Bytes Used values for all fields in index.
+
+Bytes usage is calculated for stored String value fields and binary value stored fields.
+For string values, bytes is taken as bytes needed to store that value in UTF-8
