@@ -1,8 +1,9 @@
 package ro.deathy.fieldsizes;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
@@ -44,7 +45,7 @@ public class FieldSizes {
     private void setUp() {
         try {
             Directory directory = FSDirectory.open(luceneIndexDir);
-            IndexReader indexReader = IndexReader.open(directory, true);
+            IndexReader indexReader = DirectoryReader.open(directory);
             this.maxDoc = indexReader.maxDoc();
             this.indexReader = indexReader;
         } catch (IOException e) {
@@ -63,8 +64,8 @@ public class FieldSizes {
         
         for (int i = 0; i < maxDoc; i++) {
             Document document = indexReader.document(i);
-            List<Fieldable> fields = document.getFields();
-            for (Fieldable field : fields) {
+            List<IndexableField> fields = document.getFields();
+            for (IndexableField field : fields) {
                 String fieldName = field.name();
 
                 AtomicInteger fieldAppearances = fieldDocumentAppearances.get(fieldName);
@@ -75,9 +76,9 @@ public class FieldSizes {
                 }
 
                 int fieldSizeInBytes = 0;
-                if (field.isBinary()) {
-                    fieldSizeInBytes = field.getBinaryLength();
-                } else if (field.isStored()) {
+                if (field.binaryValue()!=null) {
+                    fieldSizeInBytes = field.binaryValue().length;
+                } else if (field.stringValue()!=null) {
                     String stringValue = field.stringValue();
                     byte[] stringBytes = stringValue.getBytes(charsetForStoredStringFields);
                     fieldSizeInBytes = stringBytes.length;
